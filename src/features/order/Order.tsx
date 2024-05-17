@@ -2,7 +2,7 @@
 
 import OrderItem from "./OrderItem";
 
-import { useFetcher, useLoaderData } from "react-router-dom";
+import { Params, useFetcher, useLoaderData } from "react-router-dom";
 import { getOrder } from "../../services/apiRestaurant";
 import {
   calcMinutesLeft,
@@ -12,6 +12,7 @@ import {
 import { CartType } from "../cart/cartSlice";
 import { useEffect } from "react";
 import { MenuType } from "../menu/Menu";
+import UpdateOrder from "./UpdateOrder";
 export type OrderType = {
   address: string;
   cart: CartType[];
@@ -104,12 +105,12 @@ function Order() {
           To pay on delivery: {formatCurrency(orderPrice + priorityPrice)}
         </p>
       </div>
+      {!priority && <UpdateOrder />}
     </div>
   );
 }
-
-export async function loader({ params }: { params: { orderId: string } }) {
-  const order = await getOrder(params.orderId);
+export async function loader({ params }: { params: Params<"orderId"> }) {
+  const order = await getOrder(params.orderId as string);
   return order;
 }
 
