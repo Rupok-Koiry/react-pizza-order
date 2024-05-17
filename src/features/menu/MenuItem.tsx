@@ -14,12 +14,12 @@ function MenuItem({ pizza }: MenuProps) {
   const currentQuantity = useSelector(getCurrentQuantityById(id));
   const isInCart = currentQuantity > 0;
   const dispatch = useDispatch();
-  const handleAddCart = () => {
+  const handleAddToCart = () => {
     const newItem = {
-      id,
+      pizzaId: id,
       name,
-      unitPrice,
       quantity: 1,
+      unitPrice,
       totalPrice: unitPrice,
     };
     dispatch(addItem(newItem));
@@ -55,7 +55,7 @@ function MenuItem({ pizza }: MenuProps) {
             </div>
           )}
           {!soldOut && !isInCart && (
-            <Button type="small" onClick={handleAddCart}>
+            <Button type="small" onClick={handleAddToCart}>
               Add to cart
             </Button>
           )}

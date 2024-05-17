@@ -2,7 +2,7 @@
 
 import OrderItem from "./OrderItem";
 
-import { useLoaderData } from "react-router-dom";
+import { useFetcher, useLoaderData } from "react-router-dom";
 import { getOrder } from "../../services/apiRestaurant";
 import {
   calcMinutesLeft,
@@ -10,18 +10,30 @@ import {
   formatDate,
 } from "../../utils/helpers";
 import { CartType } from "../cart/cartSlice";
+import { useEffect } from "react";
+import { MenuType } from "../menu/Menu";
 export type OrderType = {
+  address: string;
+  cart: CartType[];
+  createdAt: string;
+  customer: string;
+  estimatedDelivery: string;
   id: string;
-  status: string;
+  orderPrice: number;
+  phone: string;
+  position: string;
   priority: boolean;
   priorityPrice: number;
-  orderPrice: number;
-  estimatedDelivery: string;
-  cart: CartType[];
+  status: string;
 };
 
 function Order() {
   const order = useLoaderData();
+  const fetcher = useFetcher();
+
+  useEffect(() => {
+    if (!fetcher.data && fetcher.state === "idle") fetcher.load("/menu");
+  }, [fetcher]);
 
   // Everyone can search for all orders, so for privacy reasons we're gonna gonna exclude names or address, these are only for the restaurant staff
   const {
@@ -66,7 +78,16 @@ function Order() {
 
       <ul className="dive-stone-200 divide-y border-b border-t">
         {cart.map((item) => (
-          <OrderItem item={item} key={item.id} />
+          <OrderItem
+            item={item}
+            key={item.pizzaId}
+            isLoadingIngredients={fetcher.state === "loading"}
+            ingredients={
+              (fetcher.data as MenuType[])?.find(
+                (pizza) => pizza.id === item.pizzaId
+              )?.ingredients || []
+            }
+          />
         ))}
       </ul>
 
